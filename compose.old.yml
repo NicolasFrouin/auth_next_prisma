@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mongo:8.0.3
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./src/data/mongo/db:/data/db
+      - ./src/data/mongo/config:/data/configdb
+    # environment:
+      # MONGO_INITDB_ROOT_USERNAME: root
+      # MONGO_INITDB_ROOT_PASSWORD: root
+      # MONGO_INITDB_DATABASE: db
+      # MONGO_REPLICA_SET_NAME: rs0
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27017']
+
+  visualizer:
+    image: mongo-express:1.0.2-18
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
+      # ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      # ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      # ME_CONFIG_MONGODB_SERVER: db
+    depends_on:
+      - db
